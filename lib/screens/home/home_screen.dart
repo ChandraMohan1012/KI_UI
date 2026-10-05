@@ -30,9 +30,15 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          'Kanavu Illam',
-          style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        titleSpacing: AppSpacing.md,
+        title: Image.asset(
+          AppAssets.logo,
+          height: 28,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => Text(
+            'Kanavu Illam',
+            style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
         centerTitle: false,
         actions: [
@@ -42,128 +48,92 @@ class HomeScreen extends StatelessWidget {
             tooltip: 'Notifications',
             backgroundColor: AppColors.transparent,
           ),
-          const SizedBox(width: AppSpacing.sm),
+          const SizedBox(width: AppSpacing.xs),
           AppIconButton(
             icon: Icons.person_outline_rounded,
             onPressed: () {},
             tooltip: 'Profile',
             backgroundColor: AppColors.transparent,
           ),
-          const SizedBox(width: AppSpacing.md),
+          const SizedBox(width: AppSpacing.sm),
         ],
       ),
-      body: ResponsiveBuilder(
-        builder: (context, breakpoint, constraints) {
-          final isExpanded = breakpoint.isExpanded;
-
-          final heroWidget = HeroCard(
-            title: 'Your Dream Home, Ready to Plan',
-            imagePath: AppAssets.isometricPreview,
-            buttonLabel: 'Start New Plan',
-            onButtonTap: onStartNewPlan,
-            statLine: const AppStatLine(
-              statText: '12.4k+ plans generated',
-            ),
-          );
-
-          final toolsAndRecentWidget = Column(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Tools',
-                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              // Hero Section - No stat line, 3-word title
+              Expanded(
+                flex: 5,
+                child: HeroCard(
+                  title: 'Plan Your Home',
+                  imagePath: AppAssets.isometricPreview,
+                  buttonLabel: 'Start New Plan',
+                  onButtonTap: onStartNewPlan,
+                ),
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sm),
+
+              // Tools Section - Single Card, 1-word labels, no subtitles
+              Expanded(
+                flex: 4,
+                child: AppCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      AppListRow(
+                        label: '3D',
+                        leadingIcon: Icons.view_in_ar_rounded,
+                        showDivider: true,
+                        onTap: onOpen3D,
+                      ),
+                      AppListRow(
+                        label: 'Vastu',
+                        leadingIcon: Icons.self_improvement_outlined,
+                        value: '98%',
+                        showDivider: true,
+                        onTap: onOpenVastu,
+                      ),
+                      AppListRow(
+                        label: 'Cost',
+                        leadingIcon: Icons.calculate_outlined,
+                        showDivider: true,
+                        onTap: onOpenCost,
+                      ),
+                      AppListRow(
+                        label: 'Structural',
+                        leadingIcon: Icons.foundation_outlined,
+                        showDivider: false,
+                        onTap: onOpenStructural,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+
+              // Recent Project Section - Single Row
               AppCard(
                 padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    AppListRow(
-                      label: '3D Walkthrough',
-                      subtitle: 'Interactive models & renders',
-                      leadingIcon: Icons.view_in_ar_rounded,
-                      showDivider: true,
-                      onTap: onOpen3D,
-                    ),
-                    AppListRow(
-                      label: 'Vastu Score',
-                      subtitle: 'Compliance analysis',
-                      leadingIcon: Icons.self_improvement_outlined,
-                      value: '98.4%',
-                      showDivider: true,
-                      onTap: onOpenVastu,
-                    ),
-                    AppListRow(
-                      label: 'Cost Estimator',
-                      subtitle: 'Material & labor BOQ',
-                      leadingIcon: Icons.calculate_outlined,
-                      showDivider: true,
-                      onTap: onOpenCost,
-                    ),
-                    AppListRow(
-                      label: 'Structural Load',
-                      subtitle: 'Safety & analysis reports',
-                      leadingIcon: Icons.foundation_outlined,
-                      showDivider: false,
-                      onTap: onOpenStructural,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Text(
-                'Recent Project',
-                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              if (recentProject != null)
-                AppCard(
-                  padding: EdgeInsets.zero,
-                  child: AppListRow(
-                    label: recentProject!['name'] ?? 'Untitled Project',
-                    subtitle: 'Last updated today',
-                    leadingIcon: Icons.home_work_outlined,
-                    trailingWidget: const AppStatusChip(
-                      label: 'Ready',
-                      variant: AppBadgeVariant.success,
-                    ),
-                    onTap: onOpenRecentProject,
+                child: AppListRow(
+                  label: recentProject?['name'] ?? 'Sample Villa',
+                  leadingIcon: Icons.home_work_outlined,
+                  trailingWidget: const AppStatusChip(
+                    label: 'Ready',
+                    variant: AppBadgeVariant.success,
                   ),
-                )
-              else
-                const AppEmptyState(
-                  icon: Icons.history,
-                  title: 'No recent projects',
-                  message: 'Start a new plan to see it here.',
+                  onTap: onOpenRecentProject ?? onOpen3D,
                 ),
-            ],
-          );
-
-          return SingleChildScrollView(
-            child: CenteredConstrainedBody(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (isExpanded)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: heroWidget),
-                        const SizedBox(width: AppSpacing.xl),
-                        Expanded(child: toolsAndRecentWidget),
-                      ],
-                    )
-                  else ...[
-                    heroWidget,
-                    const SizedBox(height: AppSpacing.xl),
-                    toolsAndRecentWidget,
-                  ],
-                  const SizedBox(height: 100), // Space for bottom nav padding
-                ],
               ),
-            ),
-          );
-        },
+            ],
+          ),
+        ),
       ),
     );
   }

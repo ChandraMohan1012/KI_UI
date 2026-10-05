@@ -24,13 +24,15 @@ class AppBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(
-        bottom: AppSpacing.xl,
+        bottom: AppSpacing.lg,
         left: AppSpacing.lg,
         right: AppSpacing.lg,
       ),
       padding: const EdgeInsets.symmetric(
-          vertical: AppSpacing.sm, horizontal: AppSpacing.md),
-      decoration: BoxDecoration(
+        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.md,
+      ),
+      decoration: const BoxDecoration(
         color: AppColors.textPrimary,
         borderRadius: AppRadius.fullBorder,
         boxShadow: AppTheme.cardShadow,
@@ -39,34 +41,45 @@ class AppBottomNav extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(items.length, (index) {
           final isSelected = currentIndex == index;
-          return GestureDetector(
-            onTap: () => onTap(index),
-            behavior: HitTestBehavior.opaque,
-            child: SizedBox(
-              width: 64,
-              height: 48,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(
-                    items[index].icon,
-                    color:
-                        isSelected ? AppColors.white : AppColors.textSecondary,
-                    size: 24,
-                  ),
-                  if (isSelected)
-                    Positioned(
-                      bottom: 4,
-                      child: Container(
-                        width: 4,
-                        height: 4,
-                        decoration: const BoxDecoration(
-                          color: AppColors.accent,
-                          shape: BoxShape.circle,
-                        ),
+          final item = items[index];
+
+          return Semantics(
+            button: true,
+            selected: isSelected,
+            label: item.label,
+            child: Tooltip(
+              message: item.label,
+              child: InkWell(
+                onTap: () => onTap(index),
+                borderRadius: AppRadius.fullBorder,
+                child: SizedBox(
+                  width: 56,
+                  height: 48,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        item.icon,
+                        color: isSelected
+                            ? AppColors.white
+                            : AppColors.textSecondary,
+                        size: 24,
                       ),
-                    ),
-                ],
+                      if (isSelected)
+                        Positioned(
+                          bottom: 6,
+                          child: Container(
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              color: AppColors.accent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           );

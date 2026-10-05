@@ -29,7 +29,7 @@ class _EstimationScreenState extends State<EstimationScreen>
     super.dispose();
   }
 
-  double get _totalArea => 1728.0; // Mock derived from projectData
+  double get _totalArea => 1728.0;
 
   double get _baseRate {
     double rate = _selectedTier == 'premium'
@@ -41,61 +41,93 @@ class _EstimationScreenState extends State<EstimationScreen>
 
   double get _totalCost => _totalArea * _baseRate;
 
+  void _showAllSheet(String title, List<Widget> children) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (_, controller) => Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+              width: 36,
+              height: 4,
+              decoration: const BoxDecoration(
+                color: AppColors.border,
+                borderRadius: AppRadius.fullBorder,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Text(title,
+                  style: context.tt.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+            ),
+            Expanded(
+              child: ListView(
+                controller: controller,
+                padding: const EdgeInsets.all(AppSpacing.md),
+                children: children,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ReportScaffold(
-      title: 'Cost Estimation',
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: HeroCard(
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            HeroCard(
               title: '₹${_totalCost.toStringAsFixed(0)}',
-              subtitle:
-                  '₹${_baseRate.toInt()} / sq.ft • ${_totalArea.toInt()} sq.ft',
-              buttonLabel: 'Download BOQ PDF',
-              onButtonTap: () {},
+              subtitle: '₹${_baseRate.toInt()} / sq.ft',
             ),
-          ),
-          AppTabBar(
-            controller: _tabController,
-            tabs: const ['Overview', 'BOQ Table', 'Materials'],
-          ),
-          SizedBox(
-            height:
-                600, // Fixed height for tab view content in scrollable scaffold
-            child: TabBarView(
+            const SizedBox(height: AppSpacing.xs),
+            AppTabBar(
               controller: _tabController,
-              children: [
-                _buildOverviewTab(),
-                _buildBOQTab(),
-                _buildMaterialsTab(),
-              ],
+              tabs: const ['Overview', 'BOQ', 'Materials'],
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.xs),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildOverviewTab(),
+                  _buildBOQTab(),
+                  _buildMaterialsTab(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildOverviewTab() {
-    final tt = context.tt;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Cost Factors',
-              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: AppSpacing.md),
-          AppCard(
+    return Column(
+      children: [
+        Expanded(
+          child: AppCard(
             padding: EdgeInsets.zero,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 AppListRow(
-                  label: 'Quality Tier',
-                  subtitle: 'Select material grade',
+                  label: 'Tier',
                   leadingIcon: Icons.star_rounded,
                   trailingWidget: DropdownButton<String>(
                     value: _selectedTier,
@@ -112,15 +144,13 @@ class _EstimationScreenState extends State<EstimationScreen>
                   showDivider: true,
                 ),
                 AppListRow(
-                  label: 'Contract Mode',
-                  subtitle: 'Labor vs Turnkey',
+                  label: 'Mode',
                   leadingIcon: Icons.handshake_rounded,
                   trailingWidget: DropdownButton<String>(
                     value: _selectedContractMode,
                     underline: const SizedBox(),
                     items: const [
-                      DropdownMenuItem(
-                          value: 'labor', child: Text('Labor Only')),
+                      DropdownMenuItem(value: 'labor', child: Text('Labor')),
                       DropdownMenuItem(
                           value: 'turnkey', child: Text('Turnkey')),
                     ],
@@ -132,97 +162,92 @@ class _EstimationScreenState extends State<EstimationScreen>
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildBOQTab() {
-    final cs = context.cs;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: AppCard(
-        padding: EdgeInsets.zero,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            headingTextStyle: context.tt.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold, color: cs.onSurfaceVariant),
-            dataTextStyle: context.tt.bodyMedium?.copyWith(color: cs.onSurface),
-            dividerThickness: 1,
-            dataRowMinHeight: 60,
-            dataRowMaxHeight: 60,
-            columns: const [
-              DataColumn(label: Text('Description')),
-              DataColumn(label: Text('Qty')),
-              DataColumn(label: Text('Unit')),
-              DataColumn(label: Text('Rate (₹)')),
-              DataColumn(label: Text('Amount (₹)')),
-            ],
-            rows: const [
-              DataRow(cells: [
-                DataCell(Text('Cement (50kg bags)')),
-                DataCell(Text('691')),
-                DataCell(Text('Bags')),
-                DataCell(Text('380')),
-                DataCell(Text('2,62,580')),
-              ]),
-              DataRow(cells: [
-                DataCell(Text('Steel (TMT Bars)')),
-                DataCell(Text('6500')),
-                DataCell(Text('Kg')),
-                DataCell(Text('65')),
-                DataCell(Text('4,22,500')),
-              ]),
-              DataRow(cells: [
-                DataCell(Text('Sand (M-Sand)')),
-                DataCell(Text('2937')),
-                DataCell(Text('cft')),
-                DataCell(Text('55')),
-                DataCell(Text('1,61,535')),
-              ]),
-            ],
+    final rows = [
+      const AppListRow(
+        label: 'Cement',
+        value: '₹2,62,580',
+        leadingIcon: Icons.inventory_2_outlined,
+        showDivider: true,
+      ),
+      const AppListRow(
+        label: 'Steel',
+        value: '₹4,22,500',
+        leadingIcon: Icons.fitness_center_rounded,
+        showDivider: true,
+      ),
+      const AppListRow(
+        label: 'Sand',
+        value: '₹1,61,535',
+        leadingIcon: Icons.grain_rounded,
+        showDivider: false,
+      ),
+    ];
+
+    return Column(
+      children: [
+        Expanded(
+          child: AppCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: rows,
+            ),
           ),
         ),
-      ),
+        TextButton(
+          onPressed: () => _showAllSheet('BOQ Breakdown', rows),
+          child:
+              const Text('View all', style: TextStyle(color: AppColors.accent)),
+        ),
+      ],
     );
   }
 
   Widget _buildMaterialsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        children: [
-          AppCard(
+    final rows = [
+      const AppListRow(
+        label: 'Cement',
+        value: '₹380/Bag',
+        leadingIcon: Icons.category_rounded,
+        showDivider: true,
+      ),
+      const AppListRow(
+        label: 'Steel',
+        value: '₹65/Kg',
+        leadingIcon: Icons.fitness_center_rounded,
+        showDivider: true,
+      ),
+      const AppListRow(
+        label: 'Bricks',
+        value: '₹9/Piece',
+        leadingIcon: Icons.apps_rounded,
+        showDivider: false,
+      ),
+    ];
+
+    return Column(
+      children: [
+        Expanded(
+          child: AppCard(
             padding: EdgeInsets.zero,
             child: Column(
-              children: [
-                const AppListRow(
-                  label: 'Cement',
-                  subtitle: 'Dalmia / Ramco / Ultratech',
-                  leadingIcon: Icons.category_rounded,
-                  value: '₹380 / Bag',
-                  showDivider: true,
-                ),
-                const AppListRow(
-                  label: 'Steel (TMT 500D)',
-                  subtitle: 'Tata Tiscon / JSW Neo',
-                  leadingIcon: Icons.fitness_center_rounded,
-                  value: '₹65 / Kg',
-                  showDivider: true,
-                ),
-                const AppListRow(
-                  label: 'Bricks (Red)',
-                  subtitle: 'Chamber Bricks',
-                  leadingIcon: Icons.apps_rounded,
-                  value: '₹9 / Piece',
-                  showDivider: false,
-                ),
-              ],
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: rows,
             ),
           ),
-        ],
-      ),
+        ),
+        TextButton(
+          onPressed: () => _showAllSheet('Materials Rate', rows),
+          child:
+              const Text('View all', style: TextStyle(color: AppColors.accent)),
+        ),
+      ],
     );
   }
 }

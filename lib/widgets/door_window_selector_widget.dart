@@ -40,25 +40,22 @@ class WindowStyleOption {
 const List<DoorStyleOption> doorStyleOptions = [
   DoorStyleOption(
     id: 'glass',
-    name: 'Glass Insert Mahogany',
-    description:
-        'Dark mahogany wood door with frosted glass insert & modern handle.',
+    name: 'Glass Insert',
+    description: 'Mahogany frosted glass',
     assetPath: AppAssets.doorGlass,
     badge: 'OPTION 3',
   ),
   DoorStyleOption(
     id: 'teak',
-    name: 'Modern Teak Wood',
-    description:
-        'Vertical teak wood grain with sleek stainless steel pull handle.',
+    name: 'Teak Wood',
+    description: 'Vertical teak grain',
     assetPath: AppAssets.doorTeak,
     badge: 'OPTION 1',
   ),
   DoorStyleOption(
     id: 'panel',
-    name: 'Classic Mahogany Panel',
-    description:
-        'Rich mahogany door with 4 raised rectangular panels & brass handle.',
+    name: 'Mahogany Panel',
+    description: 'Mahogany raised panel',
     assetPath: AppAssets.doorPanel,
     badge: 'OPTION 2',
   ),
@@ -67,24 +64,22 @@ const List<DoorStyleOption> doorStyleOptions = [
 const List<WindowStyleOption> windowStyleOptions = [
   WindowStyleOption(
     id: 'wood',
-    name: 'Teak Wooden Frame',
-    description:
-        'Traditional solid teak wood frame window with clear glass shutters.',
+    name: 'Teak Frame',
+    description: 'Teak wood frame',
     assetPath: AppAssets.windowWood,
     badge: 'OPTION 2',
   ),
   WindowStyleOption(
     id: 'upvc',
-    name: 'UPVC Sliding Window',
-    description:
-        'White 3-track UPVC sliding window with clear glass & mosquito mesh.',
+    name: 'UPVC Sliding',
+    description: 'UPVC sliding frame',
     assetPath: AppAssets.windowUpvc,
     badge: 'OPTION 1',
   ),
   WindowStyleOption(
     id: 'black',
-    name: 'Black Aluminum Window',
-    description: 'Modern black anodized aluminum frame with double glazing.',
+    name: 'Black Aluminum',
+    description: 'Black aluminum frame',
     assetPath: AppAssets.windowBlack,
     badge: 'OPTION 3',
   ),
@@ -150,7 +145,7 @@ class _DoorWindowSelectorWidgetState extends State<DoorWindowSelectorWidget>
       widget.onCustomImageUploaded?.call(image, category);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('✓ Custom $category image uploaded successfully!'),
+          content: Text('$category uploaded'),
           backgroundColor: context.cs.primary,
         ));
       }
@@ -426,8 +421,8 @@ class _DoorWindowSelectorWidgetState extends State<DoorWindowSelectorWidget>
             icon: Icon(Icons.add_photo_alternate_outlined, color: cs.primary),
             label: Text(
               _customDoorImage != null
-                  ? 'Custom Door Uploaded: ${_customDoorImage!.name}'
-                  : 'Upload Custom Door Image',
+                  ? 'Door: ${_customDoorImage!.name}'
+                  : 'Upload Custom Door',
               style: TextStyle(
                 color: cs.primary,
                 fontWeight: FontWeight.w600,
@@ -591,8 +586,8 @@ class _DoorWindowSelectorWidgetState extends State<DoorWindowSelectorWidget>
             icon: Icon(Icons.add_photo_alternate_outlined, color: cs.primary),
             label: Text(
               _customWindowImage != null
-                  ? 'Custom Window Uploaded: ${_customWindowImage!.name}'
-                  : 'Upload Custom Window Image',
+                  ? 'Window: ${_customWindowImage!.name}'
+                  : 'Upload Custom Window',
               style: TextStyle(
                 color: cs.primary,
                 fontWeight: FontWeight.w600,

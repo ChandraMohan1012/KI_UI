@@ -9,7 +9,6 @@ abstract final class AppAssets {
   static const String _images = 'assets/images';
 
   static const String logo = '$_images/logo.png';
-  static const String luxuryVillaBg = '$_images/luxury_villa_bg.png';
   static const String architecturalBg = '$_images/architectural_bg.jpg';
   static const String blueprintPlaceholder =
       '$_images/blueprint_placeholder.png';

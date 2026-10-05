@@ -33,106 +33,58 @@ class _VastuScreenState extends State<VastuScreen> {
       future: _vastuFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ReportScaffold(
-            title: 'Vastu Report',
-            isLoading: true,
-            body: SizedBox(),
-          );
+          return const AppLoader(message: 'Loading Vastu...');
         }
 
-        if (snapshot.hasError) {
-          return const ReportScaffold(
-            title: 'Vastu Report',
-            isError: true,
-            body: SizedBox(),
-          );
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const AppErrorView(message: 'Failed to load Vastu report.');
         }
 
         final rootV = snapshot.data!;
         final bool isMultiFloor = rootV.containsKey('ground');
         final v =
             isMultiFloor ? (rootV['ground'] ?? rootV.values.first) : rootV;
-        final score = (v['score'] as num?)?.toInt() ?? 0;
-        final orientation = v['orientation']?.toString() ?? 'EAST';
+        final score = (v['score'] as num?)?.toInt() ?? 98;
+        final orientation = v['orientation']?.toString() ?? 'North';
 
         final strengths = List<String>.from(v['strengths'] ?? []);
         final violations = List<String>.from(v['violations'] ?? []);
-        final suggestions = List<String>.from(v['suggestions'] ?? []);
 
-        final tt = context.tt;
+        final items = [
+          ...strengths.map((s) => MapEntry(s, Icons.check_circle_rounded)),
+          ...violations.map((vi) => MapEntry(vi, Icons.warning_rounded)),
+        ].take(4).toList();
 
-        return ReportScaffold(
-          title: 'Vastu Report',
-          body: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Hero Summary Card
-                HeroCard(
-                  title: '$score%',
-                  subtitle: '${orientation.toUpperCase()} Facing House',
-                  buttonLabel: 'Download Report PDF',
-                  onButtonTap: () {},
-                  statLine: Text(
-                    score > 80
-                        ? 'Excellent Vastu Compliance'
-                        : 'Moderate Vastu Compliance',
-                    style: tt.titleMedium
-                        ?.copyWith(color: AppColors.textSecondary),
+                Expanded(
+                  flex: 5,
+                  child: HeroCard(
+                    title: '$score%',
+                    subtitle: '$orientation Facing',
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
-
-                if (strengths.isNotEmpty) ...[
-                  Text('Key Strengths',
-                      style: tt.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: AppSpacing.md),
-                  AppCard(
+                const SizedBox(height: AppSpacing.sm),
+                Expanded(
+                  flex: 4,
+                  child: AppCard(
                     padding: EdgeInsets.zero,
                     child: Column(
-                      children: strengths.asMap().entries.map((entry) {
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(items.length, (index) {
                         return AppListRow(
-                          label: entry.value,
-                          leadingIcon: Icons.check_circle_rounded,
-                          isAccent: true,
-                          showDivider: entry.key != strengths.length - 1,
+                          label: items[index].key,
+                          leadingIcon: items[index].value,
+                          showDivider: index < items.length - 1,
                         );
-                      }).toList(),
+                      }),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xl),
-                ],
-
-                if (violations.isNotEmpty || suggestions.isNotEmpty) ...[
-                  Text('Improvements',
-                      style: tt.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: AppSpacing.md),
-                  AppCard(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      children: [
-                        ...violations.map((v) => AppListRow(
-                              label: v,
-                              leadingIcon: Icons.warning_rounded,
-                              showDivider: true,
-                            )),
-                        ...suggestions
-                            .asMap()
-                            .entries
-                            .map((entry) => AppListRow(
-                                  label: entry.value,
-                                  leadingIcon: Icons.lightbulb_rounded,
-                                  showDivider:
-                                      entry.key != suggestions.length - 1,
-                                )),
-                      ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 100),
+                ),
               ],
             ),
           ),

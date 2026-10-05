@@ -342,13 +342,13 @@ class MockData {
               'title': 'Ultra-Modern Minimalist',
               'description':
                   'Clean rectilinear cubic lines, wooden louvers, warm exterior LED strip lighting, and toughened glass railings.',
-              'image_url': AppAssets.luxuryVillaBg,
+              'image_url': AppAssets.sampleImage,
             },
             {
               'title': 'Contemporary Tropical Villa',
               'description':
                   'Overhanging pitched terracotta eaves, textured exposed stone cladding, and abundant garden greenery integration.',
-              'image_url': AppAssets.luxuryVillaBg,
+              'image_url': AppAssets.sampleImage,
             },
             {
               'title': 'Traditional Chettinad-Fusion',

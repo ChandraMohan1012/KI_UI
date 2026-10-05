@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_theme.dart';
-import '../utils/app_assets.dart';
 import '../widgets/app_button.dart';
 
 class PaymentSuccessScreen extends StatefulWidget {
@@ -35,57 +33,13 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ClipRRect(
-                borderRadius: AppRadius.lgBorder,
-                child: Image.asset(
-                  AppAssets.houseGif,
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Icon(
-                    Icons.home_work_outlined,
-                    size: 80,
-                    color: cs.primary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'Loading your home...',
-                style: tt.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: cs.onSurface,
-                ),
-              ),
+              CircularProgressIndicator(color: cs.primary),
               const SizedBox(height: AppSpacing.md),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                  (index) => Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: cs.primary,
-                      shape: BoxShape.circle,
-                    ),
-                  )
-                      .animate(onPlay: (c) => c.repeat())
-                      .scaleXY(
-                        begin: 0.5,
-                        end: 1.5,
-                        duration: 400.ms,
-                        curve: Curves.easeInOut,
-                        delay: (index * 100).ms,
-                      )
-                      .then()
-                      .scaleXY(
-                        begin: 1.5,
-                        end: 0.5,
-                        duration: 400.ms,
-                        curve: Curves.easeInOut,
-                      ),
+              Text(
+                'Generating Plan...',
+                style: tt.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -93,28 +47,6 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
         ),
       );
     }
-
-    final now = DateTime.now();
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final month = months[now.month - 1];
-    final hour =
-        now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
-    final ampm = now.hour >= 12 ? 'PM' : 'AM';
-    final minute = now.minute.toString().padLeft(2, '0');
-    final formattedDate = '${now.day} $month ${now.year}, $hour:$minute $ampm';
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -124,98 +56,79 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
           onPressed: () => Navigator.pop(context),
+          tooltip: 'Back',
         ),
       ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          color: sc.successContainer,
-                          shape: BoxShape.circle,
-                        ),
-                      ).animate().scale(
-                            duration: 500.ms,
-                            curve: Curves.easeOutBack,
-                          ),
-                      Icon(
-                        Icons.check_circle_rounded,
-                        color: sc.success,
-                        size: 72,
-                      ).animate().scale(
-                            duration: 350.ms,
-                            curve: Curves.easeOutBack,
-                          ),
-                    ],
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: sc.successContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_circle_rounded,
+                      color: sc.success,
+                      size: 48,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Payment Successful!',
-                    textAlign: TextAlign.center,
+                    'Payment Successful',
                     style: tt.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      letterSpacing: -0.3,
                     ),
-                  ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1),
+                  ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    '₹${widget.amount.toInt()} Paid Successfully',
-                    style: tt.titleMedium?.copyWith(
+                    '₹${widget.amount.toInt()}',
+                    style: tt.titleLarge?.copyWith(
                       color: cs.primary,
                       fontWeight: FontWeight.bold,
                     ),
-                  ).animate().fadeIn(delay: 250.ms),
-                  const SizedBox(height: AppSpacing.xl),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   Container(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: cs.surfaceContainer,
+                      color: cs.surfaceContainerLow,
                       borderRadius: AppRadius.lgBorder,
                       border: Border.all(color: cs.outlineVariant),
                     ),
                     child: Column(
                       children: [
-                        _detailRow('Payment ID', '#PXN78451236', cs),
+                        _detailRow('Status', 'Paid', cs),
                         Divider(
                             color: cs.outlineVariant.withValues(alpha: 0.5),
-                            height: 24),
-                        _detailRow('Date & Time', formattedDate, cs),
+                            height: 16),
+                        _detailRow('Method', 'UPI', cs),
                         Divider(
                             color: cs.outlineVariant.withValues(alpha: 0.5),
-                            height: 24),
-                        _detailRow('Payment Method', 'UPI', cs),
-                        Divider(
-                            color: cs.outlineVariant.withValues(alpha: 0.5),
-                            height: 24),
+                            height: 16),
                         _detailRow('Amount', '₹${widget.amount.toInt()}', cs,
                             isTotal: true),
                       ],
                     ),
-                  ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.05),
+                  ),
                   const SizedBox(height: AppSpacing.xl),
                   AppButton(
-                    label: 'GENERATE YOUR PLAN TO LIFE',
-                    icon: Icons.auto_awesome_rounded,
+                    label: 'Start Plan',
+                    trailingIcon: Icons.arrow_forward_rounded,
                     isFullWidth: true,
                     isLoading: _isGenerating,
                     onPressed: _isGenerating
                         ? null
                         : () {
                             setState(() => _isGenerating = true);
-                            debugPrint(
-                              'SUCCESS_SCREEN: Generate button clicked, calling onFinish',
-                            );
                             widget.onFinish?.call();
                             Future.delayed(
                               const Duration(milliseconds: 2500),
@@ -227,7 +140,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                               },
                             );
                           },
-                  ).animate().fadeIn(delay: 450.ms),
+                  ),
                 ],
               ),
             ),
@@ -250,8 +163,8 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
           value,
           style: TextStyle(
             color: isTotal ? cs.primary : cs.onSurface,
-            fontWeight: isTotal ? FontWeight.w900 : FontWeight.bold,
-            fontSize: isTotal ? 16 : 13,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
+            fontSize: isTotal ? 15 : 13,
           ),
         ),
       ],

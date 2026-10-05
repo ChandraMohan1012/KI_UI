@@ -207,7 +207,7 @@ class _MaterialSearchWidgetState extends State<MaterialSearchWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Search materials (e.g. cement, steel, sand, paint...)',
+          'Search materials',
           style: tt.bodyMedium?.copyWith(
             color: cs.onSurfaceVariant,
             fontWeight: FontWeight.w600,
@@ -243,8 +243,7 @@ class _MaterialSearchWidgetState extends State<MaterialSearchWidget> {
                     color: cs.onSurface,
                   ),
                   decoration: InputDecoration(
-                    hintText:
-                        'Type to search material... (Press Enter for AI Search)',
+                    hintText: 'Search material...',
                     hintStyle: tt.bodySmall?.copyWith(
                       color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                       fontSize: 13,

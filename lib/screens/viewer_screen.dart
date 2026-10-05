@@ -356,19 +356,13 @@ class ViewerScreenState extends State<ViewerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = context.cs;
-    final tt = context.tt;
-
     if (_validationFailed) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('3D Visualization')),
         body: Center(
           child: AppEmptyState(
             icon: Icons.error_outline_rounded,
-            title: 'Invalid Architectural Model Data',
-            message:
-                'The geometry layout could not be verified. Please re-run the layout processor.',
+            title: 'Invalid Model',
           ),
         ),
       );
@@ -376,95 +370,55 @@ class ViewerScreenState extends State<ViewerScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('3D Visualization'),
-        backgroundColor: Colors.transparent,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Center(
-          child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Interactive 3D Model',
-                  style:
-                      tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AppCard(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 3D Model fills available viewport height
+              Expanded(
+                child: AppCard(
                   padding: EdgeInsets.zero,
-                  child: SizedBox(
-                    height: 400,
-                    child: ClipRRect(
-                      borderRadius: AppRadius.mdBorder,
-                      child: Stack(
-                        children: [
-                          if (kIsWeb)
-                            HtmlElementView(viewType: _viewId)
-                          else
-                            WebViewWidget(controller: _mobileController),
-                          if (!_isWebViewReady)
-                            const Center(
-                              child: AppLoader(
-                                message: 'Loading 3D Engine...',
-                              ),
+                  child: ClipRRect(
+                    borderRadius: AppRadius.lgBorder,
+                    child: Stack(
+                      children: [
+                        if (kIsWeb)
+                          HtmlElementView(viewType: _viewId)
+                        else
+                          WebViewWidget(controller: _mobileController),
+                        if (!_isWebViewReady)
+                          const Center(
+                            child: AppLoader(
+                              message: 'Loading 3D Engine...',
                             ),
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
-                Text('Door Styles',
-                    style:
-                        tt.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: AppSpacing.sm),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: doorStyleOptions
-                        .map((opt) => _buildStyleCard(
-                            opt.id, opt.name, opt.assetPath,
-                            isSelected: _doorStyle == opt.id,
-                            onTap: () => _updateDoorStyle(opt.id)))
-                        .toList(),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+
+              // Customize Action Row
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _showDoorWindowSelector,
+                      icon: const Icon(Icons.style_outlined, size: 18),
+                      label: const Text('Customize Doors & Windows'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textPrimary,
+                        side: const BorderSide(color: AppColors.border),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                Text('Window Styles',
-                    style:
-                        tt.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: AppSpacing.sm),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: windowStyleOptions
-                        .map((opt) => _buildStyleCard(
-                            opt.id, opt.name, opt.assetPath,
-                            isSelected: _windowStyle == opt.id,
-                            onTap: () => _updateWindowStyle(opt.id)))
-                        .toList(),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                AppPillButton(
-                  label: 'Apply to 3D Model',
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: const Text(
-                          'Styles applied to 3D Model successfully!'),
-                      backgroundColor: cs.primary,
-                    ));
-                  },
-                  isFullWidth: true,
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
